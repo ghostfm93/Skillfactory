@@ -1,0 +1,28 @@
+{% extends 'default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Delete
+{% endblock title %}
+
+
+{% block content %}
+  <style>
+   .brd {
+    border: 4px outset #5c5c5c; /* Параметры границы */
+    background: #e5e5e5; /* Цвет фона */
+    padding: 10px; /* Поля вокруг текста */
+   }
+  </style>
+<h2>Вы действительно хотите удалить данную новость?</h2>
+        <div class="brd">
+            <p align="left">{{ new.head|censor }}{{new.creation_time|date:'d M Y'}}</p>
+            <p align="left">{{ new.text|censor }}</p>
+            <p align="left"> <a href="/news/">Назад к списку новостей</a> </p>
+        </div>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="подтвердить"></form>
+
+{% endblock content %}

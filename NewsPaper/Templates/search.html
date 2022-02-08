@@ -1,0 +1,61 @@
+{% extends 'news.html' %}
+{% load custom_filters %}
+
+{% block title %} Search {% endblock title %}
+
+{% block content %}
+
+<style>
+   .brd {
+    border: 4px outset #5c5c5c;
+    background: #e5e5e5;
+    padding: 10px;
+   }
+  </style>
+<div class="brd">
+<form method="GET">
+    {{ filter.form }} <!-- Форму от фильтров за нас сделает django. А вот кнопку, увы придётся делать самому -->
+    <input type="submit" value="Найти">
+</form>
+</div>
+
+    <h1>Все новости</h1>
+    <p>Всего новостей: {{news|length}}</p>
+    <hr>
+    {% if news %}
+        {% for new in news %}
+        <div class="brd">
+            <p align="left">{{ new.head|censor }}{{new.creation_time|date:'d M Y'}}</p>
+            <p align="left">{{ new.text|truncatewords:20|censor }}<a href="/news/{{new.id}}">читать далее</a></p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <h2>Новостёв нет!</h2>
+    {% endif %}
+
+{% if is_paginated %}
+
+    <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+    {% if page_obj.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+    {% endif %}
+
+    <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+    {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+            <a>{{ num }}</a>
+        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">>>></a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
+
+{% endif %}
+
+{% endblock content %}
